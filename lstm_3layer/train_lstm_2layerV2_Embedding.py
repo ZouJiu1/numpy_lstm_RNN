@@ -21,7 +21,7 @@ def train():
     id2char, char2id, length, all_lines, endid, end, quanzhong = \
         preprocess(frequency = frequency, delete_markchar = True)
     embedding_dim  = 100
-    hidden_size = [300, 300]
+    hidden_size = [100, 100]
     batch_size = 1
     sequence_length = 6 - 1
     num_layer = len(hidden_size)
