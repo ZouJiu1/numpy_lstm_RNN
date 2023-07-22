@@ -106,11 +106,11 @@ python lstm_3layer\predict_bidirectional_lstm_2layerV2_Embedding.py
 花常更花中。
 ```
 ## blogs
-[numpy实现RNN层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/645190373](https://zhuanlan.zhihu.com/p/645190373)
-[numpy实现LSTM层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/645261658](https://zhuanlan.zhihu.com/p/645261658)
-[numpy实现embedding层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642997702](https://zhuanlan.zhihu.com/p/642997702)
-[全连接层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642043155](https://zhuanlan.zhihu.com/p/642043155)
-[损失函数的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642025009](https://zhuanlan.zhihu.com/p/642025009)
+[numpy实现RNN层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/645190373](https://zhuanlan.zhihu.com/p/645190373)<br>
+[numpy实现LSTM层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/645261658](https://zhuanlan.zhihu.com/p/645261658)<br>
+[numpy实现embedding层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642997702](https://zhuanlan.zhihu.com/p/642997702)<br>
+[全连接层的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642043155](https://zhuanlan.zhihu.com/p/642043155)<br>
+[损失函数的前向传播和反向传播-https://zhuanlan.zhihu.com/p/642025009](https://zhuanlan.zhihu.com/p/642025009)<br>
 
 ### Reference
 [https://blog.csdn.net/SHU15121856/article/details/104387209](https://blog.csdn.net/SHU15121856/article/details/104387209)<br>
