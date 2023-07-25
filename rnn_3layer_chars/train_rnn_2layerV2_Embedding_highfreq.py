@@ -151,6 +151,7 @@ def train():
         rnnlayers[1].restore_model(models[2])
         fullconnect.restore_model(models[3])
         start_iters = models[-1]
+        del models
     else:
         # exit(-1)
         pass

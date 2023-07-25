@@ -84,7 +84,7 @@ def preprocess(frequency, delete_markchar = False):
     for key, value in quanzhong.items():
         if '？' in key or '。' in key or '，' in key:
             continue
-        quanzhong___[char2id[key]] = 1.0 #np.exp(((maxval - value['val'])*10 / (count - num)))
+        quanzhong___[char2id[key]] =  1.0 # np.exp(((maxval - value['val'])*10 / (count - num)))
     quanzhong___[char2id[EOS]] = 0.001
     return id2char, char2id, length, all_lines, endid, end, quanzhong___
 

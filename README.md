@@ -4,6 +4,8 @@ including those layers, **Fullconnect**, **RNNCell**, **LSTMCell**, **Embedding*
 In training, it use cpu，it can train with Chinse poetry<br>
 
 ## Train and predict
+train in MacBook Pro 2020 Intel
+
 ### character
 rnn English 26 character
 ```

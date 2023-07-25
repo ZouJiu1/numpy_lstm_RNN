@@ -32,7 +32,7 @@ def train():
     iters = cnt * epoch // batch_size
     showiter = 100
     savemodel = 1000
-    learning_rate = 0.001
+    learning_rate = 0.01
     
     embedding = Embedding_layer(length, embedding_dim = embedding_dim)
     lstm_layer0 = lstmcell_layer(embedding_dim, hidden_size[0], bias)
@@ -55,16 +55,18 @@ def train():
         lstm_decode[1].restore_model(models[2*2])
         fullconnect.restore_model(models[2*2+1])
         start_iters = models[-1]
+        del models
     else:
         # exit(-1)
         pass
-    # start_iters  = 0
+    start_iters  = 0
     lines = 0
+    lr = learning_rate
     for e in range(iters):
         # if e < 1000:
         #     lr = 0.0001
         # else:
-        lr = learning_rate
+        # 
 
         if e == int(iters * (16/20)):
             lr = learning_rate * 0.1
@@ -241,6 +243,6 @@ def savemodel_fun(embedding, num_layer, lstmlayers, fullconnect, lstm_decode, e)
         pickle.dump(model, obj)
 
 if __name__=="__main__":
-    frequency = 2000
+    frequency = 1000
     pretrained_model = os.path.join(abspath, "models", 'tangshi_lstm2layer_embedding_dynamic_%d.pkl'%frequency)
     train()

@@ -42,7 +42,7 @@ def train():
     lstmlayers = [lstm_layer0, lstm_layer1]
     fullconnect = fclayer(hidden_size[1], length, True)
 
-    # start_iters  = 0
+    start_iters  = 0
     if os.path.exists(pretrained_model):
         with open(pretrained_model, 'rb') as obj:
             models = pickle.load(obj)
@@ -51,6 +51,7 @@ def train():
         lstmlayers[1].restore_model(models[2])
         fullconnect.restore_model(models[3])
         start_iters = models[-1]
+        del models
     else:
         # exit(-1)
         pass
@@ -203,6 +204,6 @@ def savemodel_fun(embedding, num_layer, lstmlayers, fullconnect, e):
         pickle.dump(model, obj)
 
 if __name__=="__main__":
-    frequency = 2000
+    frequency = 1000
     pretrained_model = os.path.join(abspath, "models", 'tangshi_lstm2layerV2_embedding_%d.pkl'%frequency)
     train()

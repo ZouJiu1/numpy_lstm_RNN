@@ -327,7 +327,7 @@ def train_single():
         sum = np.sum((outputs - hidden) * (outputs - hidden))
         delta = 2 * (hidden - outputs)
         _, _, _ = lstmcell.backward(delta, hidden_delta, cell_delta, inputs, (hidden_0, cell_0), i, f, g, o, c_tanhk)
-        lstmcell.update(0.001)
+        lstmcell.update(0.003)
         lstmcell.setzero()
         print(sum)
 
@@ -388,7 +388,7 @@ if __name__=="__main__":
                          )
 
 ##########################################################################
-    # train_single()
+    train_single()
 ##########################################################################
 
     hidden_cell_next, middle_output = lstmcell.forward(inputs, hidden0_cell0)

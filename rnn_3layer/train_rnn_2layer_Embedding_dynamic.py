@@ -55,6 +55,7 @@ def train():
         rnn_decode[1].restore_model(models[2*2])
         fullconnect.restore_model(models[2*2+1])
         start_iters = models[-1]
+        del models
     else:
         # exit(-1)
         pass

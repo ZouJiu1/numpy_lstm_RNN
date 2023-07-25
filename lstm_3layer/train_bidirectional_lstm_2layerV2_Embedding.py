@@ -28,14 +28,14 @@ def train():
     num_layer = len(hidden_size)
     bias = True
 
-    epoch = 300
+    epoch = 100
     all_num = 0
     for i in all_lines:
         all_num += len(i)
     iters = (all_num // (sequence_length + 1) + 2*sequence_length) * epoch // batch_size
     showiter = 100
     savemodel = 1000
-    learning_rate = 0.01
+    learning_rate = 0.001
 
     embedding = Embedding_layer(length, embedding_dim = embedding_dim)
     lstm_layer0 = lstmcell_layer(embedding_dim, hidden_size[0], bias)
@@ -52,6 +52,7 @@ def train():
         lstmlayers[1].restore_model(models[2])
         fullconnect.restore_model(models[3])
         start_iters = models[-1]
+        del models
     else:
         # exit(-1)
         pass
