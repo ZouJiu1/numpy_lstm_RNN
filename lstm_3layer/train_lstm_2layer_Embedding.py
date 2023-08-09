@@ -16,17 +16,46 @@ from net.loss import cross_entropy_loss
 from net.Embedding import Embedding_layer
 from tokenlzh import preprocess
 
+# inputs = np.zeros((sequence_length, batch_size), dtype = np.int32)
+# labels = np.zeros((batch_size, length), dtype = np.int32)
+
+def getinputs(sequence_length, batch_size, all_lines, length, char2id, id2char):
+    inputs = []
+    labels = []
+    inputs_character = []
+    for i in all_lines:
+        inputs_character.extend(i)
+    id_start = np.random.randint(0, len(inputs_character) - sequence_length -1, (batch_size))
+    for id in id_start:
+        tmp = [ci for ci in inputs_character[id : id + sequence_length + 1]]
+        inputchar = "".join([id2char[ci]  for ci in tmp])
+        inputs.append(tmp[:-1])
+        labels.append(tmp[-1])
+        charin = ''.join([id2char[i] for i in tmp[:-1]])
+        charou = ''.join([id2char[i] for i in tmp[-1:]])
+    inputs = np.array(inputs).T
+    la = np.zeros((batch_size, length))
+    la[np.arange(batch_size), labels] = 1
+
+    return inputs, la, charin, charou
+
 def train():
     id2char, char2id, length, all_lines, endid, end, quanzhong = \
         preprocess(frequency = frequency, delete_markchar = True)
-    embedding_dim  = 100
+    
+    inputs_pages = ""
+    for i in range(len(inputs_pages)):
+        lines = inputs_pages[i].strip()
+        inputs_character += lines
+    
+    embedding_dim  = 200
     hidden_size = [100, 100]
-    batch_size = 1
+    batch_size = 100
     sequence_length = 6 - 1
     num_layer = len(hidden_size)
     bias = True
 
-    epoch = 100
+    epoch = 1000
     all_num = 0
     for i in all_lines:
         all_num += len(i)
@@ -88,40 +117,43 @@ def train():
         elif e == int(iters * (18/20)):
             lr = learning_rate * 0.1 * 0.1
         
-        inputs = np.zeros((sequence_length, batch_size), dtype = np.int32)
-        labels = np.zeros((batch_size, length), dtype = np.int32)
-        for th in range(batch_size):
-            if sentence < 0:
-                choose_lines = (choose_lines + 1) % len(all_lines)
-                inputs_character = all_lines[choose_lines]
-                sentence = 9
-                index = 0
+        # inputs = np.zeros((sequence_length, batch_size), dtype = np.int32)
+        # labels = np.zeros((batch_size, length), dtype = np.int32)
+        # for th in range(batch_size):
+        #     if sentence < 0:
+        #         choose_lines = (choose_lines + 1) % len(all_lines)
+        #         inputs_character = all_lines[choose_lines]
+        #         sentence = 9
+        #         index = 0
 
-            if len(inputs_character) - index < sequence_length + 1:
-                sentence = -9
-                inp = [i for i in inputs_character[index:-1]]
-                inptwo = [endid for i in range(sequence_length - len(inp))]
-                try:
-                    oup = [inputs_character[-1]]
-                except:
-                    oup = [endid]
-                index += len(inputs_character)
-                charin = ''.join([id2char[i] for i in inp + inptwo])
-                charou = ''.join([id2char[i] for i in oup])
-                inputs[np.arange(len(inp)), th] = inp
-                inputs[np.arange(len(inp), sequence_length), th] = inptwo
-                labels[th, oup[0]] = 1
-            else:
-                inp = [i for i in inputs_character[index : index + sequence_length]]
-                ouptwo = [inputs_character[index + sequence_length]]
-                index += sequence_length + 1
-                charin = ''.join([id2char[i] for i in inp])
-                charou = ''.join([id2char[i] for i in ouptwo])
-                inputs[np.arange(sequence_length), th] = inp
-                labels[th, ouptwo[0]] = 1
+        #     if len(inputs_character) - index < sequence_length + 1:
+        #         sentence = -9
+        #         inp = [i for i in inputs_character[index:-1]]
+        #         inptwo = [endid for i in range(sequence_length - len(inp))]
+        #         try:
+        #             oup = [inputs_character[-1]]
+        #         except:
+        #             oup = [endid]
+        #         index += len(inputs_character)
+                # charin = ''.join([id2char[i] for i in inp + inptwo])
+                # charou = ''.join([id2char[i] for i in oup])
+        #         inputs[np.arange(len(inp)), th] = inp
+        #         inputs[np.arange(len(inp), sequence_length), th] = inptwo
+        #         labels[th, oup[0]] = 1
+        #     else:
+        #         inp = [i for i in inputs_character[index : index + sequence_length]]
+        #         ouptwo = [inputs_character[index + sequence_length]]
+        #         index += sequence_length + 1
+        #         charin = ''.join([id2char[i] for i in inp])
+        #         charou = ''.join([id2char[i] for i in ouptwo])
+        #         inputs[np.arange(sequence_length), th] = inp
+        #         labels[th, ouptwo[0]] = 1
 
-            if len(inputs_character) - index <= 0:
-                sentence = -9
+        #     if len(inputs_character) - index <= 0:
+        #         sentence = -9
+        
+        inputs, labels, charin, charou = getinputs(sequence_length, batch_size, all_lines, length, char2id, id2char)
+
         if e < start_iters:
             continue
         for j in range(sequence_length):
@@ -141,6 +173,8 @@ def train():
             if j==sequence_length-1:
                 y = fullconnect.forward(hidden[1])
                 loss, delta, predict = cross_entropy_loss(y, labels[:, :])
+                loss = batch_size * loss
+                delta = delta * batch_size
                 delta = qzg * delta
             inputs_col[0].append(embedding_output)
             inputs_col[1].append(hidden[0])

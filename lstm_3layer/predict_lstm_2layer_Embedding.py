@@ -69,8 +69,8 @@ def predict():
     tmp = []
     for j in range(length):
         for i in range(sequence_length):
-            tmp.append(first_inputs[i, :])
-            inputs = np.array([first_inputs[i, :]])
+            tmp.append(int(first_inputs[i, 0]))
+            inputs = np.array([first_inputs[i, 0]])
             embedding_output = embedding.forward(inputs)
             (hidden[0], cell[0]), middle_output = lstmlayers[0].forward(embedding_output, (hidden[0], cell[0]))
             (hidden[1], cell[1]), middle_output = lstmlayers[1].forward(hidden[0], (hidden[1], cell[1]))
@@ -78,8 +78,8 @@ def predict():
                 y = fullconnect.forward(hidden[1])
                 p_shift = y - np.max(y, axis = -1)[:, np.newaxis]                    # avoid too large in exp
                 predict = np.exp(p_shift) / np.sum(np.exp(p_shift), axis = -1)[:, np.newaxis]
-                p = np.argmax(predict, axis=-1)[0]
-                tmp.append(p)
+                p = np.squeeze(np.argmax(predict, axis=-1))
+                tmp.append(int(p))
                 rek = id2char[int(p)]
                 if rek==end:
                     break

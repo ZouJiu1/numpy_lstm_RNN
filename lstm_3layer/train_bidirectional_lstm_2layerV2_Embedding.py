@@ -17,25 +17,47 @@ from net.loss import cross_entropy_loss
 from net.Embedding import Embedding_layer
 from tokenlzh import preprocess, EOS
 
+def getinputs(sequence_length, batch_size, all_lines, length, char2id, id2char):
+    inputs = []
+    labels = []
+    inputs_character = []
+    for i in all_lines:
+        inputs_character.extend(i)
+    id_start = np.random.randint(0, len(inputs_character) - sequence_length -1, (batch_size))
+    for id in id_start:
+        tmp = [ci for ci in inputs_character[id : id + sequence_length + 1]]
+        inputchar = "".join([id2char[ci]  for ci in tmp])
+        inputs.append(tmp[:-1])
+        labels.append(tmp[1:])
+        charin = ''.join([id2char[i] for i in tmp[:-1]])
+        charou = ''.join([id2char[i] for i in tmp[-1:]])
+    inputs = np.array(inputs).T
+    labels = np.array(labels)
+    la = np.zeros((sequence_length, batch_size, length), dtype = np.int32)
+
+    for h in range(len(labels)):
+        la[np.arange(len(labels[h])), h, labels[h]] = 1
+    return inputs, la, charin, charou
+
 # https://d2l.ai/chapter_recurrent-modern/bi-rnn.html
 def train():
     id2char, char2id, length, all_lines, endid, end, quanzhong = \
         preprocess(frequency = frequency, delete_markchar = True)
-    embedding_dim  = 100
-    hidden_size = [100, 100]
-    batch_size = 1
+    embedding_dim  = 200
+    hidden_size = [600, 600]
+    batch_size = 100
     sequence_length = 6 - 1
     num_layer = len(hidden_size)
     bias = True
 
-    epoch = 100
+    epoch = 260
     all_num = 0
     for i in all_lines:
         all_num += len(i)
     iters = (all_num // (sequence_length + 1) + 2*sequence_length) * epoch // batch_size
     showiter = 100
     savemodel = 1000
-    learning_rate = 0.001
+    learning_rate = 0.01
 
     embedding = Embedding_layer(length, embedding_dim = embedding_dim)
     lstm_layer0 = lstmcell_layer(embedding_dim, hidden_size[0], bias)
@@ -92,40 +114,43 @@ def train():
         elif e == int(iters * (18/20)):
             lr = learning_rate * 0.1 * 0.1
 
-        inputs = np.zeros((sequence_length, batch_size), dtype = np.int32)
-        labels = np.zeros((sequence_length, batch_size, length), dtype = np.int32)
-        for th in range(batch_size):
-            if sentence < 0:
-                # choose_lines = np.random.randint(0, len(all_lines))
-                choose_lines = (choose_lines + 1) % len(all_lines)
-                inputs_character = all_lines[choose_lines]
-                sentence = 9
-                index = 0
+        # inputs = np.zeros((sequence_length, batch_size), dtype = np.int32)
+        # labels = np.zeros((sequence_length, batch_size, length), dtype = np.int32)
+        # for th in range(batch_size):
+        #     if sentence < 0:
+        #         # choose_lines = np.random.randint(0, len(all_lines))
+        #         choose_lines = (choose_lines + 1) % len(all_lines)
+        #         inputs_character = all_lines[choose_lines]
+        #         sentence = 9
+        #         index = 0
 
-            if len(inputs_character) - index < sequence_length + 1:
-                sentence = -9
-                inp = [i for i in inputs_character[index:-1]]
-                inptwo = [endid for i in range(sequence_length - len(inp))]
-                oup = [i for i in inputs_character[index+1:]]
-                ouptwo = [endid for i in range(sequence_length - len(oup))]
-                index += sequence_length + 1
-                charin = ''.join([id2char[i] for i in inp])
-                charou = ''.join([id2char[i] for i in oup])
-                inputs[np.arange(len(inp)), th] = inp
-                inputs[np.arange(len(inp), sequence_length), th] = inptwo
-                labels[np.arange(len(oup)), th, oup] = 1
-                labels[np.arange(len(oup), sequence_length), th, ouptwo] = 1
-            else:
-                inp = [i for i in inputs_character[index : index + sequence_length]]
-                oup = [i for i in inputs_character[index + 1: index + sequence_length + 1]]
-                index += sequence_length + 1
-                charin = ''.join([id2char[i] for i in inp])
-                charou = ''.join([id2char[i] for i in oup])
-                inputs[np.arange(sequence_length), th] = inp
-                labels[np.arange(sequence_length), th, oup] = 1
+        #     if len(inputs_character) - index < sequence_length + 1:
+        #         sentence = -9
+        #         inp = [i for i in inputs_character[index:-1]]
+        #         inptwo = [endid for i in range(sequence_length - len(inp))]
+        #         oup = [i for i in inputs_character[index+1:]]
+        #         ouptwo = [endid for i in range(sequence_length - len(oup))]
+        #         index += sequence_length + 1
+        #         charin = ''.join([id2char[i] for i in inp])
+        #         charou = ''.join([id2char[i] for i in oup])
+        #         inputs[np.arange(len(inp)), th] = inp
+        #         inputs[np.arange(len(inp), sequence_length), th] = inptwo
+        #         labels[np.arange(len(oup)), th, oup] = 1
+        #         labels[np.arange(len(oup), sequence_length), th, ouptwo] = 1
+        #     else:
+        #         inp = [i for i in inputs_character[index : index + sequence_length]]
+        #         oup = [i for i in inputs_character[index + 1: index + sequence_length + 1]]
+        #         index += sequence_length + 1
+        #         charin = ''.join([id2char[i] for i in inp])
+        #         charou = ''.join([id2char[i] for i in oup])
+        #         inputs[np.arange(sequence_length), th] = inp
+        #         labels[np.arange(sequence_length), th, oup] = 1
 
-            if len(inputs_character) - index <= 0:
-                sentence = -9
+            # if len(inputs_character) - index <= 0:
+                # sentence = -9
+
+        inputs, labels, charin, charou = getinputs(sequence_length, batch_size, all_lines, length, char2id, id2char)
+
         if e < start_iters:
             continue
         qzg_col = []

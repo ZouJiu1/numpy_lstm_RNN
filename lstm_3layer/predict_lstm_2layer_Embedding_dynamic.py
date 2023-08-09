@@ -30,7 +30,7 @@ def predict():
     endid = char2id[EOS]
 
     embedding_dim  = 100
-    hidden_size = [300, 300]
+    hidden_size = [100, 100]
     num_layer = len(hidden_size)
     bias = True
 
